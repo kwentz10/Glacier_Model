@@ -55,20 +55,19 @@ class Glacier:
             self.dqdx=glacier_model.dqdx_func(dx)
             self.dhdt=glacier_model.b_func(gamma, Amp, P, ELA_mean)-self.dqdx
             self.h+=self.dhdt*dt
+            for i in range(0, len(self.h)): #make sure bottom limit of z does not go below zb
+                if self.h[i]<0:
+                    self.h[i]=0
             self.z=self.h+self.zb
-            self.z=self.z
-            for i in range(0, len(self.z)): #make sure bottom limit of z does not go below zb
-                if self.z[i]<self.zb[i]:
-                    self.z[i]=self.zb[i]
-            if self.timestep[t] % 1 ==0:
+            if self.timestep[t] % 10 ==0:
                 #figure 1 Glacier accumulation       
                 self.figure1.clear()
                 self.figure1.set_title('Glacier Accumulation & Ablation Over Time')
                 self.figure1.set_xlabel('Distance (m)')
                 self.figure1.set_ylabel('Elevation (m)')
-                self.figure1.set_ylim(2200, 3000) #make sure y axis doesn't change
-                self.figure1.set_xlim(0, 9000) #make sure x axis doesn't change
-                self.figure1.text(8000, 2680, 'Time [yrs]: %d\nELA=%d m' % (self.timestep[t], self.ELA))
+                self.figure1.set_ylim(2000,4000) #make sure y axis doesn't change
+                self.figure1.set_xlim(0, 15000) #make sure x axis doesn't change
+                self.figure1.text(12500, 2900, 'Time [yrs]: %d\nELA=%d m' % (self.timestep[t], self.ELA))
                 self.figure1.plot(self.spacestep, self.z, label='Glacier Height', color='b')  
                 self.figure1.plot(self.spacestep, self.zb, label='Bedrock Height', color='k')
                 self.figure1.plot(self.spacestep, (np.zeros(len(self.spacestep))+self.ELA),  '--r', label='ELA')
@@ -82,8 +81,7 @@ class Glacier:
                 h=self.figure2.plot(self.timestep[t], self.ELA, 'ro')
                 plt.pause(0.00001)
                 l=h.pop(0) #remove last plot entry
-                l.remove()        
-##            print self.z[0], self.z[len(self.z)-1]           
+                l.remove()                  
         plt.ioff()    
 
     def finalize(self):
@@ -91,18 +89,18 @@ class Glacier:
  
 if __name__== "__main__":
         t_min=0.0 #years
-        t_max=150.0 # years
+        t_max=400.0 # years
         dt=0.001 #years
         x_min=0.0 #m
-        x_max=10000.0 #m
-        dx=1000 #m
-        zmax=2600 #m
+        x_max=16000.0 #m
+        dx=100.0 #m
+        zmax=2550 #m
         s=0.03 #slope of glacier elevation linear function
-        h0=50.0 #m
+        h0=0.0 #m
         gamma=0.01 #m/yr
-        ELA_mean= 2550 #m
-        Amp=100 #m
-        P=10 #years
+        ELA_mean= 2450 #m
+        Amp=25 #m
+        P=50 #years
         A=(2.1*10**(-16)) #Pa-3yr-1
         density_ice=917 #kgm-3
         g=9.81 #ms-2

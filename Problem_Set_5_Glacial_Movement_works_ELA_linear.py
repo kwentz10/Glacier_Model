@@ -46,19 +46,18 @@ class Glacier:
             self.dqdx=glacier_model.dqdx_func(dx)
             self.dhdt=glacier_model.b_func(gamma, ELA)-self.dqdx
             self.h+=self.dhdt*dt
+            for i in range(0, len(self.h)): #make sure bottom limit of z does not go below zb
+                if self.h[i]<0:
+                    self.h[i]=0
             self.z=self.h+self.zb
-            self.z=self.z
-            for i in range(0, len(self.z)): #make sure bottom limit of z does not go below zb
-                if self.z[i]<self.zb[i]:
-                    self.z[i]=self.zb[i]
-            if self.timestep[t] % 1 ==0:
+            if self.timestep[t] % 10 ==0:
                 self.figure.clear()
                 plt.title('Glacier Accumulation & Ablation Over Time')
                 plt.xlabel('Distance (m)')
                 plt.ylabel('Elevation (m)')
-                self.figure.set_ylim(2200, 3000) #make sure y axis doesn't change
-                self.figure.set_xlim(0, 9000) #make sure x axis doesn't change
-                plt.text(7500, 2800, 'Time [yrs]: %d\nELA=%d m' % (self.timestep[t], ELA))
+                self.figure.set_ylim(2000, 4000) #make sure y axis doesn't change
+                self.figure.set_xlim(0, 15000) #make sure x axis doesn't change
+                plt.text(12000, 3500, 'Time [yrs]: %d\nELA=%d m' % (self.timestep[t], ELA))
                 self.figure.plot(self.spacestep, self.z, label='Glacier Height', color='b')  
                 self.figure.plot(self.spacestep, self.zb, label='Bedrock Height', color='k')
                 self.figure.plot(self.spacestep, (np.zeros(len(self.spacestep))+ELA),  '--r', label='ELA')
@@ -66,7 +65,6 @@ class Glacier:
                 self.figure.fill_between(self.spacestep, 0, self.zb, color='k', interpolate=True)
                 self.figure.legend()
                 plt.pause(0.00001)
-##            print self.z[0], self.z[len(self.z)-1]
         plt.ioff()    
 
     def finalize(self):
@@ -74,16 +72,16 @@ class Glacier:
  
 if __name__== "__main__":
         t_min=0.0 #years
-        t_max=150.0 # years
+        t_max=400.0 # years
         dt=0.001 #years
         x_min=0.0 #m
-        x_max=10000.0 #m
-        dx=1000 #m
+        x_max=16000.0 #m
+        dx=100.0 #m
         zmax=2550 #m
         s=0.03 #slope of glacier elevation linear function
-        h0=50.0 #m
+        h0=0.0 #m beginning thickness of glacier
         gamma=0.01 #m/yr
-        ELA= 2500 #m
+        ELA= 2450 #m
         A=(2.1*10**(-16)) #Pa-3yr-1
         density_ice=917 #kgm-3
         g=9.81 #ms-2
